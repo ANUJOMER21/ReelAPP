@@ -6,5 +6,5 @@ import androidx.navigation.NavController
 
 @Composable
 fun ProfilePage (navController: NavController){
-    Text("ProfilePage")
+
 }
