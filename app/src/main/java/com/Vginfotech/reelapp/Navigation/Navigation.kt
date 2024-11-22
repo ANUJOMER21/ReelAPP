@@ -1,13 +1,17 @@
-package com.Vginfotech.reelapp
+package com.Vginfotech.reelapp.Navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.Vginfotech.reelapp.CategorySelector
+import com.Vginfotech.reelapp.page.CategorySelector
 import com.Vginfotech.reelapp.LoginRegister.OtpPage
-import com.Vginfotech.reelapp.cideo.AddVideo
-import com.Vginfotech.reelapp.cideo.ReelsScreen
+import com.Vginfotech.reelapp.page.EditProfile
+import com.Vginfotech.reelapp.page.ProfilePage
+import com.Vginfotech.reelapp.page.ReferEarn
+import com.Vginfotech.reelapp.page.WalletScreen
+import com.Vginfotech.reelapp.video.AddVideo
+import com.Vginfotech.reelapp.video.ReelsScreen
 import compose.material.theme.LoginPage
 import compose.material.theme.RegisterPage
 enum class Navigation(val route: String) {
@@ -17,7 +21,10 @@ enum class Navigation(val route: String) {
     Profile("profile_page"),
     AddVideo("AddVideo_page"),
     OtpPage("otp_page"),
-    CategorySelector("category_selector")
+    CategorySelector("category_selector"),
+    EditProfile("edit_profile"),
+    Wallet("wallet"),
+    Referearn("referearn")
 }
 @Composable
 fun NavigationPage(isalreadyLogin:Boolean=false){
@@ -35,6 +42,11 @@ fun NavigationPage(isalreadyLogin:Boolean=false){
         composable(Navigation.AddVideo.route, content = { AddVideo(navController=navController) })
         composable(Navigation.OtpPage.route, content = { OtpPage(navController=navController) })
         composable(Navigation.CategorySelector.route, content = { CategorySelector(navController=navController) })
+        composable(Navigation.EditProfile.route, content = { EditProfile(navController=navController) })
+        composable(Navigation.Wallet.route, content = { WalletScreen(navController=navController) })
+        composable(Navigation.Referearn.route, content = { ReferEarn(navController=navController) })
+
+
 
 
     })

@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.Vginfotech.reelapp.Navigation
+import com.Vginfotech.reelapp.Navigation.Navigation
 import com.Vginfotech.reelapp.R
 import compose.material.theme.GradientButton
 

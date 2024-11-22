@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalAnimationApi::class)
 
-package com.Vginfotech.reelapp.cideo
+package com.Vginfotech.reelapp.video
 
 
 
@@ -57,7 +57,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.Vginfotech.reelapp.R
 import com.Vginfotech.reelapp.Icon
-import com.Vginfotech.reelapp.Navigation
+import com.Vginfotech.reelapp.Navigation.Navigation
 
 import com.Vginfotech.reelapp.Reel
 import com.Vginfotech.reelapp.ReelInfo

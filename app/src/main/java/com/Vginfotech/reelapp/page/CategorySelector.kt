@@ -1,7 +1,6 @@
-package com.Vginfotech.reelapp
+package com.Vginfotech.reelapp.page
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,15 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.Vginfotech.reelapp.Navigation
-import com.example.reels.ChipSelectorState
-import com.example.reels.ChipsSelector
-import com.example.reels.SelectionMode
-import com.example.reels.rememberChipSelectorState
+import com.Vginfotech.reelapp.Navigation.Navigation
 import compose.material.theme.GradientButton
 
 @Composable

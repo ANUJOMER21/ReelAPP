@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import com.Vginfotech.reelapp.R
 import com.Vginfotech.reelapp.LoginRegister.Visibility
 import com.Vginfotech.reelapp.LoginRegister.VisibilityOff
-import com.Vginfotech.reelapp.Navigation
+import com.Vginfotech.reelapp.Navigation.Navigation
 
 
 @Composable
