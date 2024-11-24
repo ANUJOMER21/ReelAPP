@@ -1,6 +1,7 @@
 package compose.material.theme
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,8 +14,13 @@ import androidx.compose.material.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -24,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -34,15 +41,85 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.Vginfotech.reelapp.API.ApiResult
+import com.Vginfotech.reelapp.API.ViewModel.ApiViewModel
+
+import com.Vginfotech.reelapp.API.model.signupmodel
 import com.Vginfotech.reelapp.R
 import com.Vginfotech.reelapp.LoginRegister.Visibility
 import com.Vginfotech.reelapp.LoginRegister.VisibilityOff
+import com.Vginfotech.reelapp.Misc
 import com.Vginfotech.reelapp.Navigation.Navigation
+import com.Vginfotech.reelapp.SharedPrefManager
+import com.Vginfotech.reelapp.page.OutlinedEditText
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+import org.koin.java.KoinJavaComponent.inject
 
 
 @Composable
-fun LoginPage(navController: NavController) {
+fun LoginPage(
+    navController: NavController
+) {
+    val viewModel: ApiViewModel =  koinViewModel()
+    val misc =Misc(LocalContext.current)
+
+
+    var number by remember   { mutableStateOf("") }
+    var password by remember   { mutableStateOf("") }
+    var loading by remember { mutableStateOf(false) }
+    val NavigationResult by viewModel.NavigationResult.collectAsStateWithLifecycle()
+    val Error by viewModel.Error.collectAsStateWithLifecycle()
+
+    LaunchedEffect(NavigationResult) {
+        NavigationResult?.let { navController.navigate(it.route){
+            popUpTo(navController.currentDestination?.id ?: return@navigate) {
+                inclusive = true
+            }
+        } }
+        viewModel.setNavigationNull()
+
+    }
+    LaunchedEffect(Error){
+        if(Error!=null){
+            misc.showToast(Error.toString())
+            loading=false
+        }
+
+
+    }
+
+
+/*    LaunchedEffect (loginResult){
+         when (loginResult) {
+             is ApiResult.Failure -> {
+                 val fail =(loginResult as ApiResult.Failure).error
+                 Log.d("ERROR",fail.toString())
+             }
+             is ApiResult.Success ->{
+                 var it=(loginResult as ApiResult.Success).data
+                 if (it != null) {
+                     misc.showToast(it.message)
+                     if(it.status.equals("success")&& !isOtpPageVisited){
+                         Log.d("OTP",it.otp.toString())
+                         viewModel.setLoginresultNull()
+                         navController.navigate(Navigation.OtpPage.route)
+                     }
+
+                 }
+
+
+             }
+         }
+     }*/
+
+
+
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -94,44 +171,62 @@ fun LoginPage(navController: NavController) {
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                SimpleOutlinedTextFieldSample()
+                OutlinedEditText(
+                    fieldName = "Mobile Number",
+                    onValueChange = { number = it },
+                    isSingleLine = true
+
+                )
 
                 Spacer(modifier = Modifier.padding(3.dp))
-                SimpleOutlinedPasswordTextField()
+                OutlinedEditText(
+                    fieldName = "Password",
+                    onValueChange = { password = it },
+                    isSingleLine = true,
+                    isPassword = true
+
+                )
+
 
                 val gradientColor = listOf(Color(0xFF484BF1), Color(0xFF673AB7))
                 val cornerRadius = 16.dp
 
 
                 Spacer(modifier = Modifier.padding(10.dp))
-               /* Button(
-                    onClick = {},
-                    modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .height(50.dp)
-                ) {
-                    Text(text = "Login", fontSize = 20.sp)
-                }*/
-                GradientButton(
-                    gradientColors = gradientColor,
-                    cornerRadius = cornerRadius,
-                    nameButton = "Login",
-                    roundedCornerShape = RoundedCornerShape(topStart = 30.dp,bottomEnd = 30.dp),
+         if(loading){
+             CircularProgressIndicator()
+         }
+                else{
+             GradientButton(
+                 gradientColors = gradientColor,
+                 cornerRadius = cornerRadius,
+                 nameButton = "Login",
+                 roundedCornerShape = RoundedCornerShape(topStart = 30.dp,bottomEnd = 30.dp),
 
-                ){
-                    navController.navigate(Navigation.OtpPage.route){
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
+                 ){
+                    if(number.isEmpty() || password.isEmpty()){
+                        misc.showToast("Please fill all details")
+
                     }
-                }
+                 else{
+
+
+
+                        viewModel.login(number, password)
+                        loading=true
+
+                    }
+
+                 /*
+                  }*/
+             }
+         }
+
 
                 Spacer(modifier = Modifier.padding(10.dp))
                 androidx.compose.material3.TextButton(onClick = {
 
-                    navController.navigate(Navigation.Register.route){
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
-                    }
+                    navController.navigate(Navigation.Register.route)
 
                 }) {
                     androidx.compose.material3.Text(
@@ -143,20 +238,7 @@ fun LoginPage(navController: NavController) {
 
 
                 Spacer(modifier = Modifier.padding(5.dp))
-                /*androidx.compose.material3.TextButton(onClick = {
 
-                    navController.navigate("reset_page"){
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
-                    }
-
-                }) {
-                    androidx.compose.material3.Text(
-                        text = "Reset Password",
-                        letterSpacing = 1.sp,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }*/
                 Spacer(modifier = Modifier.padding(20.dp))
 
             }
@@ -217,86 +299,4 @@ fun GradientButton(
             )
         }
     }
-}
-
-
-//email id
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun SimpleOutlinedTextFieldSample() {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    var text by rememberSaveable { mutableStateOf("") }
-
-    OutlinedTextField(
-        value = text,
-        onValueChange = { text = it },
-        shape = RoundedCornerShape(topEnd =12.dp, bottomStart =12.dp),
-        label = {
-            Text("Name or Email Address",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelMedium,
-            ) },
-        placeholder = { Text(text = "Name or Email Address") },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Email
-        ),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.primary),
-        singleLine = true,
-        modifier = Modifier.fillMaxWidth(0.8f),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-                // do something here
-            }
-        )
-
-    )
-}
-
-//password
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun SimpleOutlinedPasswordTextField() {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    var password by rememberSaveable { mutableStateOf("") }
-    var passwordHidden by rememberSaveable { mutableStateOf(true) }
-    OutlinedTextField(
-        value = password,
-        onValueChange = { password = it },
-        shape = RoundedCornerShape(topEnd =12.dp, bottomStart =12.dp),
-        label = {
-            Text("Enter Password",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelMedium,
-            ) },
-        visualTransformation =
-        if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
-        //  keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Password
-        ),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.primary),
-        trailingIcon = {
-            IconButton(onClick = { passwordHidden = !passwordHidden }) {
-                val visibilityIcon =
-                    if (passwordHidden) Visibility else VisibilityOff
-                // Please provide localized description for accessibility services
-                val description = if (passwordHidden) "Show password" else "Hide password"
-                Icon(imageVector = visibilityIcon, contentDescription = description)
-            }
-        },
-        modifier = Modifier.fillMaxWidth(0.8f),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-                // do something here
-            }
-        )
-    )
 }

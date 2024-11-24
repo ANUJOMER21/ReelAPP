@@ -4,6 +4,7 @@ package com.Vginfotech.reelapp*/
 package com.Vginfotech.reelapp.page
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -43,6 +44,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.Vginfotech.reelapp.API.model.Category
+import com.Vginfotech.reelapp.API.model.categorymodel
 import com.Vginfotech.reelapp.ui.theme.ReelAPPTheme
 
 
@@ -60,21 +63,21 @@ enum class SelectionMode(val index: Int) {
 
 @Stable
 interface ChipSelectorState {
-    val chips: List<String>
-    val selectedChips: List<String>
+    val chips: List<Category>
+    val selectedChips: List<Category>
 
-    fun onChipClick(chip: String)
-    fun isSelected(chip: String): Boolean
+    fun onChipClick(chip: Category)
+    fun isSelected(chip: Category): Boolean
 }
 
 class ChipSelectorStateImpl(
-    override val chips: List<String>,
-    selectedChips: List<String> = emptyList(),
+    override val chips: List<Category>,
+    selectedChips: List<Category>,
     val mode: SelectionMode = SelectionMode.Single,
 ) : ChipSelectorState {
     override var selectedChips by mutableStateOf(selectedChips)
 
-    override fun onChipClick(chip: String) {
+    override fun onChipClick(chip: Category) {
         if (mode == SelectionMode.Single) {
             if (!selectedChips.contains(chip)) {
                 selectedChips = listOf(chip)
@@ -88,7 +91,10 @@ class ChipSelectorStateImpl(
         }
     }
 
-    override fun isSelected(chip: String): Boolean = selectedChips.contains(chip)
+    override fun isSelected(chip: Category): Boolean  {
+        Log.d("isSelected",selectedChips.toString())
+       return selectedChips.any { it.id == chip.id }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -124,12 +130,12 @@ class ChipSelectorStateImpl(
             restore = { items ->
                 var index = 0
                 val chipsSize = items[index++] as Int
-                val chips = List(chipsSize) {
-                    items[index++] as String
+                val chips = List<Category>(chipsSize) {
+                    items[index++] as Category
                 }
                 val selectedSize = items[index++] as Int
                 val selectedChips = List(selectedSize) {
-                    items[index++] as String
+                    items[index++] as Category
                 }
                 val mode = SelectionMode.fromIndex(items[index] as Int)
                 ChipSelectorStateImpl(
@@ -144,8 +150,8 @@ class ChipSelectorStateImpl(
 
 @Composable
 fun rememberChipSelectorState(
-    chips: List<String>,
-    selectedChips: List<String> = emptyList(),
+    chips: List<Category>,
+    selectedChips: List<Category> = emptyList(),
     mode: SelectionMode = SelectionMode.Single,
 ): ChipSelectorState {
     if (chips.isEmpty()) error("No chips provided")
@@ -183,6 +189,7 @@ fun ChipsSelector(
         horizontalArrangement = horizontalArrangement,
         verticalArrangement = verticalArrangement,
     ) {
+        Log.d("ChipsSelector",state.selectedChips.toString())
         state.chips.forEach { chip ->
             Chip(
                 label = chip,
@@ -201,7 +208,7 @@ fun ChipsSelector(
 
 @Composable
 fun Chip(
-    label: String,
+    label: Category,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -265,7 +272,7 @@ fun Chip(
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
     ) {
         Text(
-            text = label,
+            text = label.name,
             fontSize = 12.sp,
             color = textColor,
             fontWeight = FontWeight.Bold,
@@ -315,61 +322,5 @@ private fun computePath(
     }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun PreviewChip() {
-    ReelAPPTheme  {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            var isSelected by remember {
-                mutableStateOf(false)
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(all = 24.dp)
-            ) {
-                Chip(
-                    label = "Avocado",
-                    isSelected = isSelected,
-                    onClick = { isSelected = !isSelected },
-                )
-                Chip(
-                    label = "Strawberry",
-                    isSelected = true,
-                    onClick = { isSelected = !isSelected },
-                )
-            }
-        }
-    }
-}
 
-@Preview(widthDp = 720)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, widthDp = 720)
-@Composable
-private fun PreviewChipSelector() {
-    ReelAPPTheme  {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-        ) {
-            val chips = remember {
-                listOf("Banana", "Blueberry", "Strawberry", "Pineapple", "Avocado")
-            }
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(all = 0.dp)
-            ) {
-
-
-                Text(text = "Multiple selection")
-                val state2 = rememberChipSelectorState(chips = chips, mode = SelectionMode.Multiple)
-                ChipsSelector(
-                    state = state2,
-
-                )
-            }
-        }
-    }
-}
 

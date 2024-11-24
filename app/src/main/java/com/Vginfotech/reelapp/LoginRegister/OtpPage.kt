@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,20 +23,47 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.Vginfotech.reelapp.API.ViewModel.ApiViewModel
+import com.Vginfotech.reelapp.Misc
 import com.Vginfotech.reelapp.Navigation.Navigation
 import com.Vginfotech.reelapp.R
 import compose.material.theme.GradientButton
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OtpPage(navController: NavController){
+    val viewModel: ApiViewModel =  koinViewModel()
+    val misc = Misc(LocalContext.current)
+    val NavigationResult by viewModel.NavigationResult.collectAsStateWithLifecycle()
+    val Error by viewModel.Error.collectAsStateWithLifecycle()
     val gradientColor = listOf(Color(0xFF484BF1), Color(0xFF673AB7))
     val cornerRadius = 16.dp
     var otpValue by remember {
         mutableStateOf("")
+    }
+
+    LaunchedEffect(NavigationResult) {
+        NavigationResult?.let {
+            navController.navigate(it.route) {
+                popUpTo(navController.currentDestination?.id ?: return@navigate) {
+                    inclusive = true
+                }
+            }
+        }
+
+        viewModel.setNavigationNull()
+    }
+
+    LaunchedEffect(Error){
+        if(Error!=null){
+            misc.showToast(Error.toString())
+        }
     }
     Box(
         modifier = Modifier
@@ -99,11 +127,8 @@ fun OtpPage(navController: NavController){
                     roundedCornerShape = RoundedCornerShape(topStart = 30.dp,bottomEnd = 30.dp),
 
                     ){
+                      viewModel.verify_otp(otpValue)
 
-                    navController.navigate(Navigation.CategorySelector.route){
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
-                    }
                 }
             }
 

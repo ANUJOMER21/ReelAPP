@@ -7,17 +7,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.Vginfotech.reelapp.API.ViewModel.ApiViewModel
 import com.Vginfotech.reelapp.Navigation.NavigationPage
 import com.Vginfotech.reelapp.ui.theme.ReelAPPTheme
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(),KoinComponent {
+    private val sharedPrefManager: SharedPrefManager by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             ReelAPPTheme {
-
-                    NavigationPage()
+                   val navController= rememberNavController()
+                    NavigationPage(sharedPrefManager.isLogin())
 
             }
         }

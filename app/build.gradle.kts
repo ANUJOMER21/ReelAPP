@@ -58,6 +58,31 @@ dependencies {
     implementation ("io.coil-kt:coil-compose:2.0.0-rc01")
     implementation ("androidx.compose.foundation:foundation-layout-android:1.7.5")
     implementation ("androidx.compose.animation:animation-core-android:1.7.5")
+        //ktor
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+// Ktor (for custom client in Retrofit)
+    implementation("io.ktor:ktor-client-core:2.3.2")
+    implementation("io.ktor:ktor-client-cio:2.3.2")
+    implementation("io.ktor:ktor-client-gson:2.3.2")
+
+// Koin
+    implementation("io.insert-koin:koin-android:3.4.1")
+    implementation(libs.androidx.runtime.livedata)
+
+    val lifecycle_version = "2.8.7"
+    val arch_version = "2.2.0"
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    // LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    implementation ("io.insert-koin:koin-androidx-compose:3.4.5")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
