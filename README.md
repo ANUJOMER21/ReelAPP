@@ -42,7 +42,7 @@ Before running this app, ensure you have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/reel-app.git
+   git clone https://github.com/Anuj_omer21/reel-app.git
    ```
 
 2. Open the project in Android Studio.
