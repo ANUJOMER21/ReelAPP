@@ -1,6 +1,4 @@
-Here's a sample `README.md` for the Reel app project that you can use:
 
-```markdown
 # Reel App
 
 Reel App is a modern Android application that allows users to sign up, log in, view reels, and manage their accounts. Users can upload, like, follow, and share reels using dynamic links. This app is built with Jetpack Compose and Kotlin, following modern Android development best practices.
@@ -81,6 +79,3 @@ If you'd like to contribute to the development of the Reel App, feel free to for
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-```
-
-This `README.md` includes an overview of the app's features, setup instructions, and structure, which should help others understand how to run the project and contribute to it. You can modify the details according to your specific app features and setup.
